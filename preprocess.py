@@ -1,82 +1,60 @@
 import os
-import csv
-import json
-import numpy as np
 import librosa
-import matplotlib.pylab as plt
-from scipy.io.wavfile import write,read
-from stft import stft
-from wave_reconstruct import reconstruct
+import scipy
+from stft import *
 
-settings_file = '../settings/data_settings.json'
-settings = json.load(open(settings_file))
+def load_data(upsampled_basedir, downsampled_basedir):
+    upsampled_waves = []
+    downsampled_waves = []
+    for dir in os.listdir(upsampled_basedir):
+        full_dir = os.path.join(upsampled_basedir, dir)
+        for filename in os.listdir(full_dir):
+            filedir = os.path.join(full_dir, filename)
+            waveform, bitrate = librosa.load(filedir, sr=None, mono=True)
+            upsampled_waves.append(waveform)
 
-INPUT_DIR_BASE = settings['input_dir_name_base']
-FFT_SIZE = settings['fft_size']
-DATA_FREQ = settings['data_freq']
-SAMPLING_FREQ = settings['nyquist_freq']
-OVERLAP_FAC = settings['overlap_factor']
+    for dir in os.listdir(downsampled_basedir):
+        ds_dir = os.path.join(downsampled_basedir, dir)
+        for filename in os.listdir(full_dir):
+            filedir = os.path.join(full_dir, filename)
+            waveform, bitrate = librosa.load(filedir, sr=None, mono=True)
+            downsampled_waves.append(waveform)
+    return np.array(upsampled_waves), np.array(downsampled_waves)
 
-np.random.seed(0)
+def filter_downsample(waveform, original_sampling_freq, downsample_factor):
+    ds_sampling_freq = original_sampling_freq / (2 * downsample_factor)
+    ds_wave = scipy.signal.decimate(waveform, int(downsample_factor), ftype="fir")
+    # print (waveform.shape)
+    # print (ds_wave.shape)
+    # print (ds_wave)
+    # print(ds_dir+filename)
+    # scipy.io.wavfile.write(os.path.join(ds_dir, filename), int(ds_sampling_freq), ds_wave[:])
+    return ds_wave
 
-def flip(nb_phase):
-    wb_phase = np.empty(nb_phase.shape, dtype=np.float32)
-    for i in xrange(nb_phase.shape[0]):
-        wb_phase[i, :] = list(reversed(nb_phase[i, :]))
-    return wb_phase
+def feature_extract(data, fft_size, fs, overlap_fac=0.5):
+    magnitude = []
+    phase = []
+    for waveform in data:
+        m, p = stft(waveform, fft_size, fs, overlap_fac)
+        if len(magnitude) == 0:
+            magnitude = m
+            phase = p
+        else:
+            magnitude = np.concatenate((magnitude, m), axis=0)
+        # print(magnitude.shape)
+    return np.array(magnitude), np.array(phase)
 
-for dir in os.listdir(INPUT_DIR_BASE):
-    full_dir = os.path.join(INPUT_DIR_BASE, dir)
-    for filename in os.listdir(full_dir):
-        filedir = os.path.join(full_dir, filename)
-        waveform, bitrate = librosa.load(filedir, sr=None, mono=True)
-        #bitrate, waveform = read(filedir)
-        channel = 1
-        waveform.reshape((-1, channel))
+def split_data(data, valid_frac, test_frac):
+    train_frac = 1 - valid_frac - test_frac
+    data_len = len(data)
+    train_data = data[0:int(train_frac*data_len)]
+    valid_data = data[int(train_frac*data_len):int((1-test_frac)*data_len)]
+    test_data = data[int((1-test_frac)*data_len):]
+    return train_data, valid_data, test_data
 
-        # Plot the wave
-        plt.plot(np.array(waveform))
-        plt.xlabel('Sample number')
-        plt.ylabel('Amplitude')
-        plt.show()
+def normalize(data):
+    normal_data = np.copy(data)
+    for i in range(len(normal_data)):
+        normal_data[i] = normal_data[i] - np.mean(normal_data[i])/np.std(normal_data[i])
+    return normal_data
 
-        wave_magnitude, wave_phase = stft(waveform, FFT_SIZE, SAMPLING_FREQ, OVERLAP_FAC)
-
-        plt.imshow(np.array(wave_magnitude), origin='lower', cmap='jet', interpolation='nearest', aspect='auto')
-        plt.colorbar()
-        plt.xlabel("Sample number")
-        plt.ylabel("Segment number")
-        plt.show()
-
-        nb_endpt = int(FFT_SIZE / 4)
-        wb_endpt = int(FFT_SIZE / 2)
-        nb_magnitude = wave_magnitude[:, 0:nb_endpt]
-        wb_magnitude = wave_magnitude[:, nb_endpt + 1:wb_endpt + 1]
-        nb_phase = wave_phase[:, 0:nb_endpt]
-        wb_phase = wave_phase[:, nb_endpt + 1:wb_endpt + 1]
-
-        #print -flip(nb_phase)[0]
-        print nb_phase[0]
-        print ""
-        print wb_phase[0]
-
-        normalized_nb = (nb_magnitude - np.mean(nb_magnitude))/np.std(nb_magnitude)
-        normalized_wb = (wb_magnitude - np.mean(wb_magnitude))/np.std(wb_magnitude)
-
-        #reconstruct(narrowband_magnitude, narrowband_phase, FFT_SIZE/4, DATA_FREQ/4, len(waveform)/4)
-        #reconstruct(wave_magnitude, wave_phase, FFT_SIZE, DATA_FREQ, len(waveform))
-        #reconstruct(wideband_magnitude, wideband_phase, FFT_SIZE/4, DATA_FREQ/4, len(waveform)/4)
-        break
-
-# low = "low_freq_rec.wav"
-# high = "high_freq_rec.wav"
-# low_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), low)
-# high_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), high)
-# low_bt, low_wave = read(low_file)
-# high_bt, high_wave = read(high_file)
-# print low_wave+high_wave
-# print ""
-# print low_wave
-# print low_bt
-# print high_wave
-# print high_bt

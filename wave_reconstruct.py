@@ -1,6 +1,12 @@
-from scipy.io.wavfile import write,read
+import scipy
 import matplotlib.pylab as plt
 import numpy as np
+
+def flip(nb_phase):
+    wb_phase = np.empty(nb_phase.shape, dtype=np.float32)
+    for i in range(nb_phase.shape[0]):
+        wb_phase[i, :] = list(reversed(nb_phase[i, :]))
+    return wb_phase
 
 """
 Reconstruct audio signal based on magnitude array and phase array for overlapped segments
@@ -15,16 +21,17 @@ def reconstruct(magnitude, phase, fft_size, sampling_freq, data_len, overlap_fac
     # print "Phase shape:", phase.shape
     wave = np.empty((num_segments, fft_size), dtype=np.float32)
     rec_frame = np.zeros(data_len+fft_size)
-    print rec_frame.shape
+    print (rec_frame.shape)
 
-    for i in xrange(num_segments):
+    for i in range(num_segments):
         complex = (magnitude[i]/2) + (1j*phase[i]) # calculate complex signal value for each segment
         #print np.exp(complex).shape
+        #complex *= fft_size
         wave[i, :] = np.real(np.fft.ifft(np.exp(complex)))
         current_hop = hop_size * i
         rec_frame[current_hop:current_hop+fft_size] += wave[i]
-    print "Wave shape after IIFT:", wave.shape
-    print np.array(rec_frame[:data_len])
-    plt.plot(np.array(rec_frame[:data_len]))
-    plt.show()
-    write('test.wav', sampling_freq, rec_frame[:data_len])
+    print ("Wave shape after IIFT:", wave.shape)
+    print ("Rec wave avg:", np.average(np.array(rec_frame[:data_len])))
+    #plt.plot(np.array(rec_frame[:data_len]))
+    #plt.show()
+    scipy.io.wavfile.write('test.wav', sampling_freq, rec_frame[:data_len])

@@ -16,8 +16,8 @@ phase: a numpy 2D array having value of phase angle for ith
        segment at jth sample
 """
 def stft(data, fft_size, fs, overlap_fac=0.5):
-    print "Data:", data
-    print ""
+    # print ("Data:", data)
+    # print ("")
 
     hop_size = np.int32(np.floor(fft_size * (1 - overlap_fac)))
     pad_end_size = fft_size  # the last segment can overlap the end of the data array by no more than one window size
@@ -31,7 +31,7 @@ def stft(data, fft_size, fs, overlap_fac=0.5):
     magnitude = np.empty((total_segments, fft_size), dtype=np.float32)  # space to hold the magnitude
     phase = np.empty((total_segments, fft_size), dtype=np.float32)  # space to hold the phase
 
-    for i in xrange(total_segments):  # for each segment
+    for i in range(total_segments):  # for each segment
         current_hop = hop_size * i  # figure out the current segment offset
         segment = proc[current_hop:current_hop + fft_size]  # get the current segment
         windowed = segment * window  # multiply by the half cosine function

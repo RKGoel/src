@@ -14,27 +14,15 @@ def load_data(upsampled_basedir, downsampled_basedir):
             bitrate, waveform = scipy.io.wavfile.read(filedir)
             upsampled_waves.append(waveform)
 
-    print(downsampled_basedir)
     for dir in os.listdir(downsampled_basedir):
         ds_dir = os.path.join(downsampled_basedir, dir)
         print(ds_dir)
         for filename in os.listdir(ds_dir):
             filedir = os.path.join(ds_dir, filename)
-            print(filedir)
             # waveform, bitrate = librosa.load(filedir, sr=None, mono=True)
             bitrate, waveform = scipy.io.wavfile.read(filedir)
             downsampled_waves.append(waveform)
     return np.array(upsampled_waves), np.array(downsampled_waves)
-
-def filter_downsample(waveform, original_sampling_freq, downsample_factor):
-    ds_sampling_freq = original_sampling_freq / (2 * downsample_factor)
-    ds_wave = scipy.signal.decimate(waveform, int(downsample_factor), ftype="fir")
-    # print (waveform.shape)
-    # print (ds_wave.shape)
-    # print (ds_wave)
-    # print(ds_dir+filename)
-    # scipy.io.wavfile.write(os.path.join(ds_dir, filename), int(ds_sampling_freq), ds_wave[:])
-    return ds_wave
 
 def feature_extract(data, fft_size, fs, overlap_fac=0.5):
     magnitude = []

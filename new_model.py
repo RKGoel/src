@@ -92,9 +92,9 @@ def run_model(input_train_data, output_train_data, input_test_data, output_test_
 
             for step in range(1, num_steps + 1):
                 # batch_x, batch_y = mnist.train.next_batch(batch_size)
-                # indices = np.random.randint(0, input_train_data.shape[0], size=batch_size)
-                batch_x = input_train_data[0:128, :]
-                batch_y = output_train_data[0:128, :]
+                indices = np.random.randint(0, input_train_data.shape[0], size=batch_size)
+                batch_x = input_train_data[indices, :]
+                batch_y = output_train_data[indices, :]
                 # Run optimization op (backprop)
                 sess.run(train_op, feed_dict={X: batch_x, Y: batch_y})
                 if step % display_step == 0 or step == 1:
@@ -118,3 +118,5 @@ def run_model(input_train_data, output_train_data, input_test_data, output_test_
             # print("Testing Accuracy:", \
             #       sess.run(accuracy, feed_dict={X: mnist.test.images,
             #                                     Y: mnist.test.labels}))
+            prediction = sess.run(preds, feed_dict={X: input_test_data})
+    return prediction

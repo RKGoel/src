@@ -12,10 +12,11 @@ def flip(nb_phase):
 Reconstruct audio signal based on magnitude array and phase array for overlapped segments
 
 """
-def reconstruct(magnitude, phase, fft_size, sampling_freq, data_len, overlap_fac=0.5):
+def reconstruct(magnitude, phase, fft_size, sampling_freq, num_segments, overlap_fac=0.5):
     hop_size = np.int32(np.floor(fft_size * (1 - overlap_fac)))
-    num_segments = np.int32(np.ceil(data_len / np.float32(hop_size)))
-    #num_segments = len(magnitude)
+    data_len = np.int32(np.ceil(num_segments*hop_size))
+    # num_segments = np.int32(np.ceil(data_len / np.float32(hop_size)))
+    # num_segments = len(magnitude)
     # print "Total Segments:", num_segments
     # print "Magnitude shape:", magnitude.shape
     # print "Phase shape:", phase.shape
@@ -32,6 +33,6 @@ def reconstruct(magnitude, phase, fft_size, sampling_freq, data_len, overlap_fac
         rec_frame[current_hop:current_hop+fft_size] += wave[i]
     print ("Wave shape after IIFT:", wave.shape)
     print ("Rec wave avg:", np.average(np.array(rec_frame[:data_len])))
-    #plt.plot(np.array(rec_frame[:data_len]))
-    #plt.show()
+    plt.plot(np.array(rec_frame[:data_len]))
+    plt.show()
     scipy.io.wavfile.write('test.wav', sampling_freq, rec_frame[:data_len])

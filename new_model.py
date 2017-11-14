@@ -20,54 +20,27 @@ num_frames_to_input = settings['num_frames_to_input']
 n_hidden_1 = settings['n_hidden_1']
 n_hidden_2 = settings['n_hidden_2']
 
-
-# tf Graph input
-def get_X_Y(num_input, num_output):
-    X = tf.placeholder("float", [None, num_input])
-    Y = tf.placeholder("float", [None, num_output])
-    return X, Y
-
-
 # Create model
 def neural_net(x, weights, biases):
+    # x = tf.nn.dropout(x, 0.8)
     # Hidden fully connected layer with n_hidden_1 neurons
     layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
+    layer_1 = tf.nn.relu(layer_1)
+    # layer_1 = tf.nn.dropout(layer_1, 0.5)
     # Hidden fully connected layer with n_hidden_2 neurons
     layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
+    layer_2 = tf.nn.relu(layer_2)
+    # layer_2 = tf.nn.dropout(layer_2, 0.5)
     # Output fully connected layer with a neuron for each class
     out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
     return out_layer
 
-
-# Construct model
-def get_predictions(X, weights, biases):
-    preds = neural_net(X, weights, biases)
-    return preds
-
-
-# Evaluate model
-def get_loss(X, weights, biases, Y):
-    preds = get_predictions(X, weights, biases)
-    loss_op = tf.reduce_min(tf.losses.mean_squared_error(
-        predictions=preds, labels=Y))
-    return loss_op
-
-
 def get_accuracy(X, weights, biases, Y):
-    preds = get_predictions(X, weights, biases)
-    correct_pred = tf.equal(preds, Y)
-    accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
-    return accuracy
-
-
-# Define loss and optimizer
-def get_train_op(X, weights, biases, Y, learning_rate):
-    loss_op = get_loss(X, weights, biases, Y)
-    # optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
-    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-    train_op = optimizer.minimize(loss_op, global_step=tf.train.get_global_step())
-    return train_op
-
+    # preds = get_predictions(X, weights, biases)
+    # correct_pred = tf.equal(preds, Y)
+    # accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+    # return accuracy
+    pass
 
 def run_model(input_train_data, output_train_data, input_test_data, output_test_data):
     # def run_model():
@@ -76,6 +49,12 @@ def run_model(input_train_data, output_train_data, input_test_data, output_test_
     num_output = int(output_train_data.shape[1])
     print("NN input & output dimension")
     print(num_input, num_output)
+    print("Mean of input:")
+    print(np.mean(input_train_data))
+
+    # Obtain placeholders for inputs and outputs
+    X = tf.placeholder("float", [None, num_input])
+    Y = tf.placeholder("float", [None, num_output])
 
     ## Initilize weights & biases ##
     weights = {
@@ -89,9 +68,6 @@ def run_model(input_train_data, output_train_data, input_test_data, output_test_
         'out': tf.Variable(tf.random_normal([num_output]))
     }
 
-    # Obtain placeholders for inputs and outputs
-    X, Y = get_X_Y(num_input, num_output)
-
     # Get predictions
     preds = neural_net(X, weights, biases)
 
@@ -99,13 +75,7 @@ def run_model(input_train_data, output_train_data, input_test_data, output_test_
     loss_op = tf.reduce_min(tf.losses.mean_squared_error(
         predictions=preds, labels=Y))
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-    train_op = optimizer.minimize(loss_op, global_step=tf.train.get_global_step())
-
-    # # Obtain different operations
-    # train_op = get_train_op(X, weights, biases, Y, learning_rate)
-    # loss_op = get_loss(X, weights, biases, Y)
-    # accuracy = get_accuracy(X, weights, biases, Y)
-    # get_preds = get_predictions(X, weights, biases)
+    train_op = optimizer.minimize(loss_op, var_list=[weights, biases], global_step=tf.train.get_global_step())
 
     # Initialize the variables (i.e. assign their default value)
     init = tf.global_variables_initializer()
@@ -122,9 +92,9 @@ def run_model(input_train_data, output_train_data, input_test_data, output_test_
 
             for step in range(1, num_steps + 1):
                 # batch_x, batch_y = mnist.train.next_batch(batch_size)
-                indices = np.random.randint(0, input_train_data.shape[0], size=batch_size)
-                batch_x = input_train_data[indices, :]
-                batch_y = output_train_data[indices, :]
+                # indices = np.random.randint(0, input_train_data.shape[0], size=batch_size)
+                batch_x = input_train_data[0:128, :]
+                batch_y = output_train_data[0:128, :]
                 # Run optimization op (backprop)
                 sess.run(train_op, feed_dict={X: batch_x, Y: batch_y})
                 if step % display_step == 0 or step == 1:
@@ -135,7 +105,7 @@ def run_model(input_train_data, output_train_data, input_test_data, output_test_
                     predicts = sess.run(preds, feed_dict={X: batch_x})
                     W = sess.run(weights)
                     print("first wt: ", W['h1'][0, 0])
-                if step % (50 * display_step) == 0:
+                if step % (10 * display_step) == 0:
                     print("Preds:", predicts[0, 0:5])
                     print("Truth:", batch_y[0, 0:5])
 

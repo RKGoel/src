@@ -7,17 +7,22 @@ def load_data(upsampled_basedir, downsampled_basedir):
     upsampled_waves = []
     downsampled_waves = []
     for dir in os.listdir(upsampled_basedir):
-        full_dir = os.path.join(upsampled_basedir, dir)
-        for filename in os.listdir(full_dir):
-            filedir = os.path.join(full_dir, filename)
-            waveform, bitrate = librosa.load(filedir, sr=None, mono=True)
+        us_dir = os.path.join(upsampled_basedir, dir)
+        for filename in os.listdir(us_dir):
+            filedir = os.path.join(us_dir, filename)
+            # waveform, bitrate = librosa.load(filedir, sr=None, mono=True)
+            bitrate, waveform = scipy.io.wavfile.read(filedir)
             upsampled_waves.append(waveform)
 
+    print(downsampled_basedir)
     for dir in os.listdir(downsampled_basedir):
         ds_dir = os.path.join(downsampled_basedir, dir)
-        for filename in os.listdir(full_dir):
-            filedir = os.path.join(full_dir, filename)
-            waveform, bitrate = librosa.load(filedir, sr=None, mono=True)
+        print(ds_dir)
+        for filename in os.listdir(ds_dir):
+            filedir = os.path.join(ds_dir, filename)
+            print(filedir)
+            # waveform, bitrate = librosa.load(filedir, sr=None, mono=True)
+            bitrate, waveform = scipy.io.wavfile.read(filedir)
             downsampled_waves.append(waveform)
     return np.array(upsampled_waves), np.array(downsampled_waves)
 
@@ -54,7 +59,9 @@ def split_data(data, valid_frac, test_frac):
 
 def normalize(data):
     normal_data = np.copy(data)
+    mean = np.mean(normal_data)
+    std_var = np.std(normal_data)
     for i in range(len(normal_data)):
-        normal_data[i] = normal_data[i] - np.mean(normal_data[i])/np.std(normal_data[i])
+        normal_data[i] = (normal_data[i] - mean)/std_var
     return normal_data
 

@@ -84,5 +84,5 @@ print(output_valid_data.shape)
 
 ## Train & test neural network ##
 # print("Starting neural network training & optimization...")
-# run_model(input_train_data, output_train_data, input_valid_data, output_valid_data)
+run_model(input_train_data, output_train_data, input_valid_data, output_valid_data)
 

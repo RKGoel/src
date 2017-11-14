@@ -1,0 +1,24 @@
+{
+  "input_dir_name_base": "C:/Users/rajat/Desktop/Fall-2017/CSCI-599-Deep-Learning/DNN_Implementation/Small-VCTK-Corpus",
+  "input_dir_name_dirs": [
+    "dev",
+    "test",
+    "train"
+  ],
+  "input_data_suffix": ".sph",
+  "test_fraction": 0.2,
+  "validation_fraction": 0.2,
+  "time_units": "seconds",
+  "splice_duration": 10.0,
+  "data_freq": 48000,
+  "data_rate": 768,
+  "wb_fft_size": 512,
+  "nb_fft_size": 512,
+  "nyquist_freq": 96000,
+  "overlap_factor": 0.5,
+  "sampling_rate_units": "kbps",
+  "downsample_factor": 4,
+  "downsample_rate": 4000,
+  "ds_dir_name_base": "C:/Users/rajat/Desktop/Fall-2017/CSCI-599-Deep-Learning/DNN_Implementation/Small-VCTK-Corpus-Downsampled",
+  "output_dir_name_base": "C:/Users/rajat/Desktop/Fall-2017/CSCI-599-Deep-Learning/DNN_Implementation/preprocessed"
+}

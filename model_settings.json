@@ -1,0 +1,10 @@
+{
+    "n_hidden_1": 1024,
+    "n_hidden_2": 1024,
+    "fft_size": 512,
+    "init_learning_rate": 0.1,
+    "batch_size": 128,
+    "num_steps": 5000,
+    "display_step": 100,
+    "num_frames_to_input": 1
+}

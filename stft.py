@@ -38,10 +38,12 @@ def stft(data, fft_size, fs, overlap_fac=0.5):
         #padded = np.append(windowed, inner_pad)  # add 0s to double the length of the data
         #spectrum = np.fft.fft(windowed) / fft_size  # take the Fourier Transform and scale by the number of samples
         spectrum = np.fft.fft(windowed)  # take the Fourier Transform
-        autopower = np.abs(spectrum * np.conj(spectrum))  # find the autopower spectrum
-        magnitude[i, :] = autopower[:fft_size]  # append to the results array
+        # autopower = np.abs(spectrum * np.conj(spectrum))  # find the autopower spectrum
+        # magnitude[i, :] = autopower[:fft_size]  # append to the results array
+        magnitude[i, :] = np.absolute(spectrum)
         phase[i, :] = np.angle(spectrum)[:fft_size]
 
     # magnitude = 20 * np.log10(magnitude)  # scale to db
     magnitude = 2 * np.log(magnitude)  # X^M(k) = ln|X(k)|^2
+
     return magnitude, phase

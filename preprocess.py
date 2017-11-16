@@ -34,6 +34,7 @@ def feature_extract(data, fft_size, fs, overlap_fac=0.5):
             phase = p
         else:
             magnitude = np.concatenate((magnitude, m), axis=0)
+            phase = np.concatenate((phase, p), axis=0)
         # print(magnitude.shape)
     return np.array(magnitude), np.array(phase)
 
@@ -47,8 +48,8 @@ def split_data(data, valid_frac, test_frac):
 
 def normalize(data):
     normal_data = np.copy(data)
-    mean = np.mean(normal_data)
-    std_var = np.std(normal_data)
+    mean = np.mean(normal_data, axis=0) # scale every feature based on mean on that feature values i.e. axis=0
+    std_var = np.std(normal_data, axis=0)
     for i in range(len(normal_data)):
         normal_data[i] = (normal_data[i] - mean)/std_var
     return normal_data

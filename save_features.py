@@ -49,7 +49,7 @@ print("Validation features extracted.")
 
 ## Normalize features ##
 print("Normalizing features...")
-nb_train_magnitude = normalize(nb_train_magnitude)
+nb_train_magnitude = normalize(nb_train_magnitude) # train mean and variance should also be used for testing
 wb_train_magnitude = normalize(wb_train_magnitude)
 nb_valid_magnitude = normalize(nb_valid_magnitude)
 wb_valid_magnitude = normalize(wb_valid_magnitude)

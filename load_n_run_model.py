@@ -7,6 +7,7 @@ from scipy.io import wavfile
 from new_model import *
 from stft import *
 from wave_reconstruct import *
+from myplotlib import *
 
 ## Load the data settings ##
 settings_file = '../settings/data_settings.json'
@@ -53,21 +54,30 @@ test_outfile = os.path.join(test_outbasedir, "p225/p225_001.wav") # take first w
 test_bitrate_in, test_wave_in = wavfile.read(test_infile)
 test_bitrate_out, test_wave_out = wavfile.read(test_outfile)
 print(test_wave_in.shape[0])
+print(test_wave_out.shape[0])
 
 test_wave_in_mag, test_wave_in_phase = stft(test_wave_in, int(NB_FFT_SIZE), NYQUIST_FREQ, OVERLAP_FAC)
-print(test_wave_in_mag.shape)
+# print(test_wave_in_mag.shape)
+plot_wave(test_wave_in)
+# plot_wave(test_wave_out)
+# print(test_wave_in)
+
+# reconstruct(test_wave_in_mag, test_wave_in_phase, int(NB_FFT_SIZE), int(NYQUIST_FREQ/4), test_wave_in_mag.shape[0], OVERLAP_FAC)
+
+## TODO normalize test_mag
 
 ## test_wave_out is dummy right now ##
 preds = run_model(input_train_data, output_train_data, test_wave_in_mag[:, 0:int(math.ceil(NB_FFT_SIZE/2))], test_wave_out)
 print(preds.shape)
-
-## Reconstruct the test wave ##
+#
+# ## Reconstruct the test wave ##
 modified_Z_M = np.array(test_wave_in_mag[:, 0:int(math.ceil(NB_FFT_SIZE/2))]) + np.float64(2*math.log(2))
-## TODO Un-normalize preds before concatenating
+# ## TODO Un-normalize preds before concatenating
 calc_mag = np.concatenate((modified_Z_M, preds), axis=1)
-print(calc_mag.shape)
-test_phase = test_wave_in_mag[:, 0:int(math.ceil(NB_FFT_SIZE/2))]
+# print(calc_mag.shape)
+test_phase = test_wave_in_phase[:, 0:int(math.ceil(NB_FFT_SIZE/2))]
 calc_phase = np.concatenate((test_phase, -np.flip(test_phase, 1)), axis=1)
-print(calc_phase.shape)
+# print(calc_phase.shape)
+# plot_wave(test_wave_out)
 
 reconstruct(calc_mag, calc_phase, int(WB_FFT_SIZE/2), int(DATA_FREQ/2), int(calc_mag.shape[0]), OVERLAP_FAC)

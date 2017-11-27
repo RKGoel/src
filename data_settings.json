@@ -13,12 +13,13 @@
   "data_freq": 48000,
   "data_rate": 768,
   "wb_fft_size": 512,
-  "nb_fft_size": 512,
+  "nb_fft_size": 256,
   "nyquist_freq": 96000,
   "overlap_factor": 0.5,
   "sampling_rate_units": "kbps",
-  "downsample_factor": 4,
+  "downsample_factor": 2,
   "downsample_rate": 4000,
+  "num_frames_to_input": 1,
   "ds_dir_name_base": "C:/Users/rajat/Desktop/Fall-2017/CSCI-599-Deep-Learning/DNN_Implementation/Small-VCTK-Corpus-Downsampled",
   "output_dir_name_base": "C:/Users/rajat/Desktop/Fall-2017/CSCI-599-Deep-Learning/DNN_Implementation/preprocessed"
 }

@@ -2,26 +2,29 @@ import os
 import librosa
 import scipy
 from stft import *
+import pickle
 
-def load_data(upsampled_basedir, downsampled_basedir):
+def load_data(upsampled_basedir, downsampled_basedir, data_section):
     upsampled_waves = []
     downsampled_waves = []
-    for dir in os.listdir(upsampled_basedir):
-        us_dir = os.path.join(upsampled_basedir, dir)
-        for filename in os.listdir(us_dir):
-            filedir = os.path.join(us_dir, filename)
-            # waveform, bitrate = librosa.load(filedir, sr=None, mono=True)
-            bitrate, waveform = scipy.io.wavfile.read(filedir)
-            upsampled_waves.append(waveform)
+    upsampled_dir = os.path.join(upsampled_basedir, data_section)
+    downsampled_dir = os.path.join(downsampled_basedir, data_section)
+    # for dir in os.listdir(upsampled_dir):
+    #     us_dir = os.path.join(upsampled_dir, dir)
+    for filename in os.listdir(upsampled_dir):
+        filedir = os.path.join(upsampled_dir, filename)
+        # waveform, bitrate = librosa.load(filedir, sr=None, mono=True)
+        bitrate, waveform = scipy.io.wavfile.read(filedir)
+        upsampled_waves.append(waveform)
 
-    for dir in os.listdir(downsampled_basedir):
-        ds_dir = os.path.join(downsampled_basedir, dir)
-        print(ds_dir)
-        for filename in os.listdir(ds_dir):
-            filedir = os.path.join(ds_dir, filename)
-            # waveform, bitrate = librosa.load(filedir, sr=None, mono=True)
-            bitrate, waveform = scipy.io.wavfile.read(filedir)
-            downsampled_waves.append(waveform)
+    # for dir in os.listdir(downsampled_dir):
+    #     ds_dir = os.path.join(downsampled_dir, dir)
+    #     print(ds_dir)
+    for filename in os.listdir(downsampled_dir):
+        filedir = os.path.join(downsampled_dir, filename)
+        # waveform, bitrate = librosa.load(filedir, sr=None, mono=True)
+        bitrate, waveform = scipy.io.wavfile.read(filedir)
+        downsampled_waves.append(waveform)
     return np.array(upsampled_waves), np.array(downsampled_waves)
 
 def feature_extract(data, fft_size, fs, overlap_fac=0.5, num_frames_to_input=1):
@@ -75,11 +78,23 @@ def split_data(data, valid_frac, test_frac):
     test_data = data[int((1-test_frac)*data_len):]
     return train_data, valid_data, test_data
 
-def normalize(data):
+def normalize(data, band_type):
     normal_data = np.copy(data)
     mean = np.mean(normal_data, axis=0) # scale every feature based on mean on that feature values i.e. axis=0
     std_var = np.std(normal_data, axis=0)
+    with open(band_type + 'mean.data', 'wb') as f:
+        pickle.dump(mean, f)
+    with open(band_type + 'std_var.data', 'wb') as f:
+        pickle.dump(std_var, f)
     for i in range(len(normal_data)):
         normal_data[i] = (normal_data[i] - mean)/std_var
     return normal_data
+
+
+def normalize_test(data, band_type="nb"):
+    with open(band_type + 'mean.data', 'rb') as f:
+        mean = pickle.load(f)
+    with open(band_type + 'std_var.data', 'rb') as f:
+        variance = pickle.load(f)
+    return (data - mean) / variance
 

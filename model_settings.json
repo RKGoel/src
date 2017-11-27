@@ -1,10 +1,10 @@
 {
-    "n_hidden_1": 1024,
-    "n_hidden_2": 1024,
+    "n_hidden_1": 256,
+    "n_hidden_2": 256,
     "fft_size": 512,
-    "init_learning_rate": 0.1,
+    "init_learning_rate": 0.01,
     "batch_size": 128,
-    "num_steps": 5000,
-    "display_step": 100,
-    "num_frames_to_input": 1
+    "num_steps": 50000,
+    "display_step": 1000,
+    "model_log_dir": "C:/Users/rajat/Desktop/Fall-2017/CSCI-599-Deep-Learning/DNN_Implementation/tmp"
 }

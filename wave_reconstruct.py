@@ -35,6 +35,6 @@ def reconstruct(magnitude, phase, fft_size, sampling_freq, num_segments, overlap
     print ("Wave shape after IIFT:", wave.shape)
     print ("Rec wave avg:", np.average(np.array(rec_frame[:data_len])))
     # print(rec_frame[:data_len])
-    plt.plot(np.array(rec_frame[:data_len]))
-    plt.show()
+    # plt.plot(np.array(rec_frame[:data_len]))
+    # plt.show()
     wavfile.write('test.wav', sampling_freq, (rec_frame[:data_len]).astype(np.dtype('i2')))

@@ -116,7 +116,6 @@ def run_model(input_train_data, output_train_data):
                 # print(batch_y.shape)
                 # Run optimization op (backprop)
                 sess.run(train_op, feed_dict={X: batch_x, Y: batch_y})
-                # saver.save(sess, 'model_iter', global_step=step)
 
                 if step % display_step == 0 or step == 1:
                     # Calculate batch loss and accuracy
@@ -132,16 +131,7 @@ def run_model(input_train_data, output_train_data):
 
             save_path = saver.save(sess, os.path.join(model_log_dir, 'model_final'))
             print("Model saved in path: %s" % save_path)
-
             print("Optimization Finished!")
-
-            # Calculate accuracy for MNIST test images
-            # print("Testing Accuracy:", \
-            #       sess.run(accuracy, feed_dict={X: input_test_data,
-            #                                     Y: output_test_data}))
-            # print("Testing Accuracy:", \
-            #       sess.run(accuracy, feed_dict={X: mnist.test.images,
-            #                                     Y: mnist.test.labels}))
 
 
 def get_preds(input_test_data, output_test_data):

@@ -26,8 +26,8 @@ for dir in os.listdir(UP_BASEDIR):
         # converted to astype(np.dtype('i2')) to make file VLC playable
         wavfile.write(os.path.join(ds_dir, filename), int(DATA_SAMPLING_FREQ/DOWNSAMPLE_FACTOR), down_wave[:].astype(np.dtype('i2')))
         down_bitrate, down_wave = wavfile.read(os.path.join(ds_dir, filename))
-        print(bitrate, down_bitrate)
-        print(waveform.shape, down_wave.shape)
+        # print(bitrate, down_bitrate)
+        # print(waveform.shape, down_wave.shape)
         # plot_wave(waveform)
         # plot_wave(down_wave)
         # break

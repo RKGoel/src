@@ -52,7 +52,7 @@ def feature_extract(data, fft_size, fs, overlap_fac=0.5, num_frames_to_input=1):
         else:
             magnitude = np.concatenate((magnitude, modified_mag), axis=0)
             phase = np.concatenate((phase, p), axis=0)
-        print(magnitude.shape)
+        # print(magnitude.shape)
     return np.array(magnitude), np.array(phase)
 
 def feature_extract_wb(data, fft_size, fs, overlap_fac=0.5):
@@ -67,7 +67,7 @@ def feature_extract_wb(data, fft_size, fs, overlap_fac=0.5):
         else:
             magnitude = np.concatenate((magnitude, m), axis=0)
             phase = np.concatenate((phase, p), axis=0)
-        print(magnitude.shape)
+        # print(magnitude.shape)
     return np.array(magnitude), np.array(phase)
 
 def split_data(data, valid_frac, test_frac):

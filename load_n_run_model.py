@@ -44,7 +44,4 @@ print(output_train_data.shape)
 ## Train & test neural network ##
 print("Starting neural network training & optimization...")
 
-## test_wave_out is dummy right now ##
-print(input_train_data.shape)
-print(output_train_data.shape)
 run_model(input_train_data, output_train_data)

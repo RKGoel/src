@@ -4,7 +4,7 @@
 
 The downsampled audio files are read using scipy library, and based on a specific window size (fft_size), we slice them into number of overlapping windows with overlap factor of 0.5 (50%). On each window we perform short-time Fourier Transform (STFT) and feed it into the network after normalizing.
 Network predicts the high frequency windows from low frequency windows and then we append the two windows respectively to generate upsampled wave. We perform wave reconstruction by passing appended windows to inverse fourier tranform with magnitude from network and estimation of phase.
-Refer [this] (http://ieeexplore.ieee.org/document/7178801/) paper for more information.
+Refer [this](http://ieeexplore.ieee.org/document/7178801/) paper for more information.
 
 ## File Structure
 
@@ -40,8 +40,8 @@ Other python files are almost self explanatory and are used by above three files
 
 ## Running the scripts
 
-Set the file structure as specified
-Change the directory paths in settings files accordingly
-Run filter_downsample_save.py to save downsampled files
-Run save_features.py that extracts and saves features
-Now we can run our model several times by simply running load_n_run_model.py that loads extracted features and runs the model
+* Set the file structure as specified
+* Change the directory paths in settings files accordingly
+* Run filter_downsample_save.py to save downsampled files
+* Run save_features.py that extracts and saves features
+* Now we can run our model several times by simply running load_n_run_model.py that loads extracted features and runs the model

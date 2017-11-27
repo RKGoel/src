@@ -16,7 +16,6 @@ num_steps = settings['num_steps']
 display_step = settings['display_step']
 
 # Network Parameters
-num_frames_to_input = settings['num_frames_to_input']
 n_hidden_1 = settings['n_hidden_1']
 n_hidden_2 = settings['n_hidden_2']
 
@@ -45,12 +44,29 @@ def get_accuracy(X, weights, biases, Y):
 def run_model(input_train_data, output_train_data, input_test_data, output_test_data):
     # def run_model():
     # Get num_input & num_output to construct model
-    num_input = int(num_frames_to_input * input_train_data.shape[1])
+    num_frames_to_input = int(input_train_data.shape[1])
+    inputs_per_frame = int(input_train_data.shape[2])
+    num_input = int(num_frames_to_input*inputs_per_frame)
     num_output = int(output_train_data.shape[1])
     print("NN input & output dimension")
     print(num_input, num_output)
     print("Mean of input:")
     print(np.mean(input_train_data))
+
+    ## Flatten input_train_data
+    flattened_input = np.empty((input_train_data.shape[0], num_input))
+    for i in range(input_train_data.shape[0]):
+        flattened_input[i] = np.array(input_train_data[i]).flatten()
+    print(flattened_input.shape)
+    print(output_train_data.shape)
+
+    ## Flatten input_test_data
+    flattened_input_test = np.empty((input_test_data.shape[0], num_input))
+    print(input_test_data.shape)
+    for i in range(input_test_data.shape[0]):
+        flattened_input_test[i] = np.array(input_test_data[i]).flatten()
+    print(flattened_input_test.shape)
+    print(output_test_data.shape)
 
     # Obtain placeholders for inputs and outputs
     X = tf.placeholder("float", [None, num_input])
@@ -86,15 +102,19 @@ def run_model(input_train_data, output_train_data, input_test_data, output_test_
 
             # Run the initializer
             sess.run(init)
+            # print("Hello")
 
             # Write summaries for tensorboard visualization
             # writer = tf.summary.FileWriter('../logs', graph=tf.get_default_graph())
 
             for step in range(1, num_steps + 1):
+                # print(step)
                 # batch_x, batch_y = mnist.train.next_batch(batch_size)
                 indices = np.random.randint(0, input_train_data.shape[0], size=batch_size)
-                batch_x = input_train_data[indices, :]
-                batch_y = output_train_data[indices, :]
+                batch_x = flattened_input[indices] # will be of shape (batch_size, num_frames_to_input*inputs_per_frame)
+                batch_y = output_train_data[indices]
+                # print(batch_x.shape)
+                # print(batch_y.shape)
                 # Run optimization op (backprop)
                 sess.run(train_op, feed_dict={X: batch_x, Y: batch_y})
                 if step % display_step == 0 or step == 1:
@@ -103,8 +123,8 @@ def run_model(input_train_data, output_train_data, input_test_data, output_test_
                     print("Step " + str(step) + ", Minibatch Loss= " + \
                           "{:.4f}".format(loss))
                     predicts = sess.run(preds, feed_dict={X: batch_x})
-                    W = sess.run(weights)
-                    print("first wt: ", W['h1'][0, 0])
+                    # W = sess.run(weights)
+                    # print("first wt: ", W['h1'][0, 0])
                 if step % (10 * display_step) == 0:
                     print("Preds:", predicts[0, 0:5])
                     print("Truth:", batch_y[0, 0:5])
@@ -118,5 +138,5 @@ def run_model(input_train_data, output_train_data, input_test_data, output_test_
             # print("Testing Accuracy:", \
             #       sess.run(accuracy, feed_dict={X: mnist.test.images,
             #                                     Y: mnist.test.labels}))
-            prediction = sess.run(preds, feed_dict={X: input_test_data})
+            prediction = sess.run(preds, feed_dict={X: flattened_input_test})
     return prediction

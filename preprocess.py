@@ -24,18 +24,47 @@ def load_data(upsampled_basedir, downsampled_basedir):
             downsampled_waves.append(waveform)
     return np.array(upsampled_waves), np.array(downsampled_waves)
 
-def feature_extract(data, fft_size, fs, overlap_fac=0.5):
+def feature_extract(data, fft_size, fs, overlap_fac=0.5, num_frames_to_input=1):
     magnitude = []
     phase = []
     for waveform in data:
         m, p = stft(waveform, fft_size, fs, overlap_fac)
+
+        ## Append previous and next frames to every frame ##
+        num_context = int((num_frames_to_input - 1) / 2)
+        empty_frames = np.zeros((num_context, m.shape[1]), dtype=np.float32)
+        modified_mag = np.zeros((m.shape[0], num_frames_to_input, m.shape[1]))
+
+        m = np.concatenate((empty_frames, m))
+        m = np.concatenate((m, empty_frames))
+
+        # m.shape[0] would now become m.shape[0]+(2*num_context)
+        # first non-zero entry in m is at num_context.
+        for i in range(num_context, m.shape[0]-(2*num_context)):
+            modified_mag[i] = m[i-num_context:i+num_context+1, :]
+
+        if len(magnitude) == 0:
+            magnitude = modified_mag
+            phase = p
+        else:
+            magnitude = np.concatenate((magnitude, modified_mag), axis=0)
+            phase = np.concatenate((phase, p), axis=0)
+        print(magnitude.shape)
+    return np.array(magnitude), np.array(phase)
+
+def feature_extract_wb(data, fft_size, fs, overlap_fac=0.5):
+    magnitude = []
+    phase = []
+    for waveform in data:
+        m, p = stft(waveform, fft_size, fs, overlap_fac)
+
         if len(magnitude) == 0:
             magnitude = m
             phase = p
         else:
             magnitude = np.concatenate((magnitude, m), axis=0)
             phase = np.concatenate((phase, p), axis=0)
-        # print(magnitude.shape)
+        print(magnitude.shape)
     return np.array(magnitude), np.array(phase)
 
 def split_data(data, valid_frac, test_frac):

@@ -18,6 +18,7 @@ OVERLAP_FAC = settings['overlap_factor']
 DOWNSAMPLE_FAC = settings['downsample_factor']
 VALID_FRAC = settings['validation_fraction']
 TEST_FRAC = settings['test_fraction']
+NUM_FRAMES_TO_INPUT = settings['num_frames_to_input']
 
 ## Load the data using methods in preprocess.py ##
 print("Loading audio files...")
@@ -34,25 +35,25 @@ print(wb_train_data.shape, wb_valid_data.shape, wb_test_data.shape)
 
 print("Extracting features...")
 ## Extract training features ##
-wb_train_magnitude, wb_train_phase = feature_extract(wb_train_data, WB_FFT_SIZE, NYQUIST_FREQ, OVERLAP_FAC)
-nb_train_magnitude, nb_train_phase = feature_extract(nb_train_data, NB_FFT_SIZE, NYQUIST_FREQ/DOWNSAMPLE_FAC, OVERLAP_FAC)
+wb_train_magnitude, wb_train_phase = feature_extract_wb(wb_train_data, WB_FFT_SIZE, NYQUIST_FREQ, OVERLAP_FAC)
+nb_train_magnitude, nb_train_phase = feature_extract(nb_train_data, NB_FFT_SIZE, NYQUIST_FREQ/DOWNSAMPLE_FAC, OVERLAP_FAC, NUM_FRAMES_TO_INPUT)
 print(wb_train_magnitude.shape)
 print(nb_train_magnitude.shape)
 print("Training features extracted.")
 
-## Extract validation features ##
-wb_valid_magnitude, wb_valid_phase = feature_extract(wb_valid_data, WB_FFT_SIZE, NYQUIST_FREQ, OVERLAP_FAC)
-nb_valid_magnitude, nb_valid_phase = feature_extract(nb_valid_data, NB_FFT_SIZE, NYQUIST_FREQ/DOWNSAMPLE_FAC, OVERLAP_FAC)
-print(wb_valid_magnitude.shape)
-print(nb_valid_magnitude.shape)
-print("Validation features extracted.")
+# Extract validation features ##
+# wb_valid_magnitude, wb_valid_phase = feature_extract(wb_valid_data, WB_FFT_SIZE, NYQUIST_FREQ, OVERLAP_FAC, NUM_FRAMES_TO_INPUT)
+# nb_valid_magnitude, nb_valid_phase = feature_extract(nb_valid_data, NB_FFT_SIZE, NYQUIST_FREQ/DOWNSAMPLE_FAC, OVERLAP_FAC, NUM_FRAMES_TO_INPUT)
+# print(wb_valid_magnitude.shape)
+# print(nb_valid_magnitude.shape)
+# print("Validation features extracted.")
 
 ## Normalize features ##
 print("Normalizing features...")
 nb_train_magnitude = normalize(nb_train_magnitude) # train mean and variance should also be used for testing
 wb_train_magnitude = normalize(wb_train_magnitude)
-nb_valid_magnitude = normalize(nb_valid_magnitude)
-wb_valid_magnitude = normalize(wb_valid_magnitude)
+# nb_valid_magnitude = normalize(nb_valid_magnitude)
+# wb_valid_magnitude = normalize(wb_valid_magnitude)
 print("Features normalized.")
 
 ## Save normalized features ##
@@ -60,10 +61,10 @@ with open('nb_train_mag.data', 'wb') as f:
     pickle.dump(nb_train_magnitude, f)
 with open('wb_train_mag.data', 'wb') as f:
     pickle.dump(wb_train_magnitude, f)
-with open('nb_valid_mag.data', 'wb') as f:
-    pickle.dump(nb_valid_magnitude, f)
-with open('wb_valid_mag.data', 'wb') as f:
-    pickle.dump(wb_valid_magnitude, f)
+# with open('nb_valid_mag.data', 'wb') as f:
+#     pickle.dump(nb_valid_magnitude, f)
+# with open('wb_valid_mag.data', 'wb') as f:
+#     pickle.dump(wb_valid_magnitude, f)
 
 # ## Split frequencies ##
 # print("Splitting frequencies...")

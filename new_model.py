@@ -7,7 +7,7 @@ import os
 # from tensorflow.examples.tutorials.mnist import input_data
 # mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
-settings_file = '../settings/model_settings.json'
+settings_file = 'model_settings.json'
 settings = json.load(open(settings_file))
 
 model_log_dir = settings['model_log_dir']

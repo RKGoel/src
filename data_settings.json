@@ -1,5 +1,5 @@
 {
-  "input_dir_name_base": "C:/Users/rajat/Desktop/Fall-2017/CSCI-599-Deep-Learning/DNN_Implementation/Small-VCTK-Corpus",
+  "input_dir_name_base": "/home/parul71625/DNN/src/input/VCTK",
   "input_dir_name_dirs": [
     "dev",
     "test",
@@ -19,7 +19,7 @@
   "sampling_rate_units": "kbps",
   "downsample_factor": 2,
   "downsample_rate": 4000,
-  "num_frames_to_input": 1,
-  "ds_dir_name_base": "C:/Users/rajat/Desktop/Fall-2017/CSCI-599-Deep-Learning/DNN_Implementation/Small-VCTK-Corpus-Downsampled",
+  "num_frames_to_input": 9,
+  "ds_dir_name_base": "/home/parul71625/DNN/src/input-Downsampled",
   "output_dir_name_base": "C:/Users/rajat/Desktop/Fall-2017/CSCI-599-Deep-Learning/DNN_Implementation/preprocessed"
 }

@@ -2,11 +2,11 @@ from __future__ import print_function
 import math
 from new_model import *
 from wave_reconstruct import *
-from myplotlib import *
-from preprocess import *
+import pickle as pickle
+#from preprocess import *
 
 ## Load the data settings ##
-settings_file = '../settings/data_settings.json'
+settings_file = 'data_settings.json'
 settings = json.load(open(settings_file))
 WB_FFT_SIZE = settings['wb_fft_size']
 NB_FFT_SIZE = settings['nb_fft_size']

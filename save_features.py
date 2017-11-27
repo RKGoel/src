@@ -5,7 +5,7 @@ from preprocess import *
 from new_model import *
 
 ## Load the data settings ##
-settings_file = '../settings/data_settings.json'
+settings_file = 'data_settings.json'
 settings = json.load(open(settings_file))
 
 INPUT_DIR_BASE = settings['input_dir_name_base']

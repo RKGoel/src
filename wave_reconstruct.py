@@ -1,5 +1,5 @@
 from scipy.io import wavfile
-import matplotlib.pylab as plt
+#import matplotlib.pylab as plt
 import numpy as np
 
 def flip(nb_phase):

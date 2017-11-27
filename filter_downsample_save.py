@@ -3,10 +3,10 @@ from scipy.signal import decimate
 import json
 import os
 import numpy as np
-from myplotlib import plot_wave
+#from myplotlib import plot_wave
 
 ## Load the data settings ##
-settings_file = '../settings/data_settings.json'
+settings_file = 'data_settings.json'
 settings = json.load(open(settings_file))
 
 DOWNSAMPLE_FACTOR = settings['downsample_factor']
@@ -16,11 +16,13 @@ DATA_SAMPLING_FREQ = settings['data_freq']
 
 for dir in os.listdir(UP_BASEDIR):
     us_dir = os.path.join(UP_BASEDIR, dir)
+    print(us_dir)
     ds_dir = os.path.join(DOWN_BASEDIR, dir)
     if not os.path.exists(ds_dir):
         os.makedirs(ds_dir)
     for filename in os.listdir(us_dir):
         filedir = os.path.join(us_dir, filename)
+        print(filedir)
         bitrate, waveform = wavfile.read(filedir)
         down_wave = decimate(waveform, int(DOWNSAMPLE_FACTOR), ftype="fir")
         # converted to astype(np.dtype('i2')) to make file VLC playable

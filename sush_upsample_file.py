@@ -130,7 +130,6 @@ def load_and_reconstruct():
     DATA_FREQ = settings['data_freq'] #48000
     NYQUIST_FREQ = settings['nyquist_freq'] #96000
     OVERLAP_FAC = settings['overlap_factor'] #0.5
-    NUM_FRAMES_TO_INPUT = settings['num_frames_to_input'] #9
 
     current_dirs_parent = os.path.dirname(os.path.dirname(test_directory))
     test_directory_output = os.path.join(current_dirs_parent, 'test_output')
@@ -149,19 +148,8 @@ def load_and_reconstruct():
         total_lsd = 0
         for file_name in os.listdir(test_directory):
             test_bitrate_in, test_wave_in = wavfile.read(os.path.join(test_directory, file_name))
-            test_wave_in_mag_previous, test_wave_in_phase = stft(test_wave_in, int(NB_FFT_SIZE), NYQUIST_FREQ,OVERLAP_FAC)
-
-            # rajjo changes
-            num_context = int((NUM_FRAMES_TO_INPUT - 1) / 2)
-            empty_frames = np.zeros((num_context, test_wave_in_mag_previous.shape[1]), dtype=np.float32)
-            test_wave_in_mag = np.zeros((test_wave_in_mag_previous.shape[0], NUM_FRAMES_TO_INPUT, test_wave_in_mag_previous.shape[1]))
-
-            test_wave_in_mag_previous = np.concatenate((empty_frames, test_wave_in_mag_previous))
-            test_wave_in_mag_previous = np.concatenate((test_wave_in_mag_previous, empty_frames))
-
-            for i in range(num_context, test_wave_in_mag_previous.shape[0] - (2 * num_context)):
-                test_wave_in_mag[i] = test_wave_in_mag_previous[i - num_context:i + num_context + 1, :]
-
+            test_wave_in_mag, test_wave_in_phase = stft(test_wave_in, int(NB_FFT_SIZE), NYQUIST_FREQ,
+                                                        OVERLAP_FAC)
             prediction = session.run(preds, feed_dict={X: test_wave_in_mag[:, 0:int(math.ceil(NB_FFT_SIZE / 2))]})
             new_Z_M = np.array(test_wave_in_mag[:, 0:int(math.ceil(NB_FFT_SIZE / 2))]) + np.float64(2 * math.log(2))
             calc_mag = np.concatenate((new_Z_M, prediction), axis=1)
